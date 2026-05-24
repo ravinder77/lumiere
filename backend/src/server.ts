@@ -9,7 +9,8 @@ app.listen(PORT, () => {
   console.log(`\n🚀  Server:  http://localhost:${PORT}`);
   console.log(`📦  API:     http://localhost:${PORT}/api`);
   console.log(`🩺  Health:  http://localhost:${PORT}/health`);
-  console.log(`✅  Ready:   http://localhost:${PORT}/ready\n`);
+  console.log(`✅  Ready:   http://localhost:${PORT}/ready`);
+  console.log(`📈  Metrics: http://localhost:${PORT}/metrics\n`);
 });
 
 export default app;
