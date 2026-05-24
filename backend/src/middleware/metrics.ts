@@ -43,17 +43,13 @@ function normalizePath(path: string) {
   return normalized.length > 0 ? `/${normalized.join('/')}` : '/';
 }
 
+
 function routeLabel(req: Request) {
-  if (typeof req.route?.path !== 'string') {
-    return normalizePath(requestPath(req));
+  if (req.route?.path) {
+    return `${req.baseUrl || ''}${req.route.path}`;
   }
 
-  const routeSegments = pathSegments(req.route.path);
-  const actualSegments = pathSegments(requestPath(req));
-  const baseSegments = actualSegments.slice(0, Math.max(actualSegments.length - routeSegments.length, 0));
-  const labeledSegments = [...baseSegments, ...routeSegments];
-
-  return labeledSegments.length > 0 ? `/${labeledSegments.join('/')}` : '/';
+  return normalizePath(requestPath(req));
 }
 
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
