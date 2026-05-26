@@ -4,15 +4,15 @@ A production-ready ecommerce platform with authentication, wishlist, reviews, or
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19 · TypeScript · Vite 6 · Tailwind CSS 3 |
-| State | Zustand (cart, auth, wishlist — all persisted) · TanStack Query v5 |
-| Routing | React Router v7 |
-| Backend | Node.js · Express 5 · TypeScript |
-| Database | PostgreSQL · Prisma ORM |
-| Auth | JWT (access 15m + refresh 7d) · bcrypt · auto-refresh interceptor |
-| Security | Helmet · CORS · express-rate-limit · Zod validation |
+| Layer    | Technology                                                         |
+|----------|--------------------------------------------------------------------|
+| Frontend | React 19 · TypeScript · Vite 6 · Tailwind CSS 3                    |
+| State    | Zustand (cart, auth, wishlist — all persisted) · TanStack Query v5 |
+| Routing  | React Router v7                                                    |
+| Backend  | Node.js · Express 5 · TypeScript                                   |
+| Database | PostgreSQL · Prisma ORM                                            |
+| Auth     | JWT (access 15m + refresh 7d) · bcrypt · auto-refresh interceptor  |
+| Security | Helmet · CORS · express-rate-limit · Zod validation                |
 
 ---
 
@@ -169,24 +169,24 @@ Shown on the `/login` page for easy testing.
 
 ### Auth — `/api/auth`
 
-| Method | Path              | Auth?  | Description                            |
-|--------|-------------------|--------|----------------------------------------|
-| POST   | `/register`       | —      | Create account → returns tokens + user |
-| POST   | `/login`          | —      | Login → returns tokens + user          |
-| POST   | `/refresh`        | —      | Refresh access token                   |
-| GET    | `/me`             | Bearer | Get current user                       |
-| PATCH  | `/profile`        | Bearer | Update name or email                   |
-| POST   | `/change-password`| Bearer | Change password                        |
-| GET    | `/orders`         | Bearer | Current user's order history           |
+| Method | Path               | Auth?  | Description                            |
+|--------|--------------------|--------|----------------------------------------|
+| POST   | `/register`        | —      | Create account → returns tokens + user |
+| POST   | `/login`           | —      | Login → returns tokens + user          |
+| POST   | `/refresh`         | —      | Refresh access token                   |
+| GET    | `/me`              | Bearer | Get current user                       |
+| PATCH  | `/profile`         | Bearer | Update name or email                   |
+| POST   | `/change-password` | Bearer | Change password                        |
+| GET    | `/orders`          | Bearer | Current user's order history           |
 
 ### Products — `/api/products`
 
-| Method | Path           | Description                                            |
-|--------|----------------|--------------------------------------------------------|
-| GET    | `/`            | List with `category`, `search`, `sort`, `page`, `limit`, `minPrice`, `maxPrice` |
-| GET    | `/featured`    | Featured products (up to 6)                           |
-| GET    | `/categories`  | Category list with item counts                        |
-| GET    | `/:id`         | Product detail + related products                     |
+| Method | Path          | Description                                                                     |
+|--------|---------------|---------------------------------------------------------------------------------|
+| GET    | `/`           | List with `category`, `search`, `sort`, `page`, `limit`, `minPrice`, `maxPrice` |
+| GET    | `/featured`   | Featured products (up to 6)                                                     |
+| GET    | `/categories` | Category list with item counts                                                  |
+| GET    | `/:id`        | Product detail + related products                                               |
 
 ### Cart — `/api/cart`
 
@@ -201,11 +201,11 @@ Shown on the `/login` page for easy testing.
 
 ### Orders — `/api/orders`
 
-| Method | Path  | Auth?    | Description       |
-|--------|-------|----------|-------------------|
-| POST   | `/`   | Optional | Place order       |
-| GET    | `/:id`| —        | Get order by ID   |
-| GET    | `/`   | Bearer   | My orders         |
+| Method | Path   | Auth?    | Description     |
+|--------|--------|----------|-----------------|
+| POST   | `/`    | Optional | Place order     |
+| GET    | `/:id` | —        | Get order by ID |
+| GET    | `/`    | Bearer   | My orders       |
 
 ### Wishlist — `/api/wishlist`  *(all require auth)*
 
@@ -270,5 +270,5 @@ Use for order confirmation, password reset tokens, and email verification.
 - **Client**: Vercel / Netlify (`cd client && npm run build` → `client/dist/`)
 - **Server**: Railway / Render / Fly.io (`cd server && npm run build` → `server/dist/`)
 - **DB**: Supabase / Neon (free PostgreSQL tiers available)
-# lumiere-ecom
-# lumiere-ecom
+# lumiere
+# lumiere
