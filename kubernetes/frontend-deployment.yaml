@@ -2,7 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: lumiere
 spec:
+  replicas: 2
+
   selector:
     matchLabels:
       app: frontend
@@ -13,19 +16,33 @@ spec:
     spec:
       containers:
         - name: lumiere-frontend
-          image: docker.io/ravinder50300/lumiere-frontend:v1.0.1
+          image: docker.io/ravinder50300/lumiere-frontend:v1.0.3
           imagePullPolicy: IfNotPresent
 
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
 
           readinessProbe:
             httpGet:
-              port: 3000
-              path: /
+              port: http
+              path: /healthz
             initialDelaySeconds: 20
+
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /healthz
+            initialDelaySeconds: 30
+            periodSeconds: 20
 
           resources:
             requests:
               cpu: "250m"
               memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          securityContext:
+            allowPrivilegeEscalation: false
