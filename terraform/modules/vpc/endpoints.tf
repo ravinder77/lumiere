@@ -12,8 +12,8 @@ locals {
 resource "aws_vpc_endpoint" "gateway" {
   for_each = toset(local.gateway_endpoints)
 
-  vpc_id = aws_vpc.main.id
-  service_name = "com.amazonaws.${var.aws_region}.${each.key}"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.${var.aws_region}.${each.key}"
   vpc_endpoint_type = "Gateway"
   route_table_ids = concat(
     aws_route_table.private[*].id, [aws_route_table.database.id]

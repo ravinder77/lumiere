@@ -1,8 +1,8 @@
 
 resource "aws_security_group" "alb" {
-  name = "${var.name_prefix}-alb-sg"
+  name        = "${var.name_prefix}-alb-sg"
   description = "Application Load Balancer Security Group"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-alb-sg"
@@ -13,18 +13,18 @@ resource "aws_security_group" "alb" {
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   security_group_id = aws_security_group.alb.id
 
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port = 80
-  to_port = 80
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 80
+  to_port     = 80
   ip_protocol = "tcp"
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   security_group_id = aws_security_group.alb.id
 
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port = 443
-  to_port = 443
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  to_port     = 443
   ip_protocol = "tcp"
 
 }
@@ -32,15 +32,15 @@ resource "aws_vpc_security_group_ingress_rule" "alb_https" {
 resource "aws_vpc_security_group_egress_rule" "alb_all" {
   security_group_id = aws_security_group.alb.id
 
-  cidr_ipv4 = "0.0.0.0/0"
+  cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "-1"
 }
 
 # ---- EKS Nodes Security Group -----
 resource "aws_security_group" "eks_nodes" {
-  name = "${var.name_prefix}-eks-nodes"
+  name        = "${var.name_prefix}-eks-nodes"
   description = "EKS worker nodes"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   tags = merge(var.tags, {
     Name = "${var.name_prefix}-eks-nodes"

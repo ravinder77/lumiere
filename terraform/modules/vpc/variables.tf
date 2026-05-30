@@ -11,7 +11,7 @@ variable "environment" {
 }
 
 variable "aws_region" {
-  type = string
+  type    = string
   default = "ap-south-1"
 }
 
@@ -20,7 +20,7 @@ variable "vpc_cidr" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
@@ -32,7 +32,7 @@ variable "public_subnet_cidrs" {
   type = list(string)
 
   validation {
-    condition = length(var.public_subnet_cidrs) == length(var.availability_zones)
+    condition     = length(var.public_subnet_cidrs) == length(var.availability_zones)
     error_message = "public_subnet_cidrs must contain one CIDR per availability zone."
   }
 }
@@ -41,7 +41,7 @@ variable "private_subnet_cidrs" {
   type = list(string)
 
   validation {
-    condition = length(var.private_subnet_cidrs) == length(var.availability_zones)
+    condition     = length(var.private_subnet_cidrs) == length(var.availability_zones)
     error_message = "private_subnet_cidrs must contain one CIDR per availability zone."
   }
 }
@@ -51,7 +51,7 @@ variable "database_subnet_cidrs" {
   type = list(string)
 
   validation {
-    condition = length(var.database_subnet_cidrs) == length(var.availability_zones)
+    condition     = length(var.database_subnet_cidrs) == length(var.availability_zones)
     error_message = "database_subnet_cidrs must contain one CIDR per availabilty zone"
   }
 }
