@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "postgres.fullname" . }}
+  name: {{ include "postgres.statefulsetName" . }}
   labels:
-    {{- include "postgres.labels" . | nindent 4 }}
+    {{ include "postgres.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "postgres.fullname" . }}
+  serviceName: {{ include "postgres.serviceName" . }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "postgres.selectorLabels" . | nindent 6 }}
+      {{ include "postgres.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "postgres.labels" . | nindent 8 }}
+        {{ include "postgres.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
+        {{ toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: postgres

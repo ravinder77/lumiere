@@ -14,7 +14,7 @@ spec:
       command:
         - sh
         - -c
-        - pg_isready -h {{ include "postgres.fullname" . }} -p {{ .Values.service.port }} -U "$POSTGRES_USER" -d {{ .Values.auth.database | quote }}
+        - pg_isready -h {{ include "postgres.serviceName" . }} -p {{ .Values.service.port }} -U "$POSTGRES_USER" -d {{ .Values.auth.database | quote }}
       env:
         - name: POSTGRES_USER
           valueFrom:

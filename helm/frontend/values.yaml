@@ -36,17 +36,17 @@ podLabels: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
+securityContext: {}
 
 service:
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 80
   targetPort: 3000
+
+env:
+  - name: BACKEND_HOST
+    value: lumiere-backend.lumiere.svc.cluster.local
 
 ingress:
   enabled: false

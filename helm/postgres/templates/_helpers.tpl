@@ -55,3 +55,17 @@ Secret name used for database credentials.
 {{- define "postgres.secretName" -}}
 {{- default (printf "%s-secret" (include "postgres.fullname" .)) .Values.auth.existingSecret }}
 {{- end }}
+
+{{/*
+StatefulSet name. This can be overridden when adopting an older raw manifest.
+*/}}
+{{- define "postgres.statefulsetName" -}}
+{{- default (include "postgres.fullname" .) .Values.statefulset.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Service name. This can be overridden to keep stable database DNS.
+*/}}
+{{- define "postgres.serviceName" -}}
+{{- default (include "postgres.fullname" .) .Values.service.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}

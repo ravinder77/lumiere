@@ -8,6 +8,9 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+statefulset:
+  nameOverride: ""
+
 auth:
   database: lumiere
   username: admin
@@ -17,6 +20,7 @@ auth:
   passwordKey: POSTGRES_PASSWORD
 
 service:
+  nameOverride: ""
   type: ClusterIP
   clusterIP: None
   port: 5432
