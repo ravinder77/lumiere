@@ -159,18 +159,22 @@ resource "aws_eks_node_group" "main" {
   }
 }
 
-resource "aws_eks_addon" "this" {
-  for_each = var.cluster_addons
+resource "aws_eks_addon" "coredns" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "coredns"
+}
 
-  cluster_name                = aws_eks_cluster.main.name
-  addon_name                  = each.key
-  addon_version               = try(each.value.addon_version, null)
-  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "OVERWRITE")
-  resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "kube-proxy"
+}
 
-  tags = merge(local.common_tags, {
-    Name = "${var.cluster_name}-${each.key}"
-  })
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "vpc-cni"
+}
 
-  depends_on = [aws_eks_node_group.main]
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "aws-ebs-csi-driver"
 }

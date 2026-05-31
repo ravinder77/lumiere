@@ -1,0 +1,10 @@
+PostgreSQL has been installed.
+
+Service DNS:
+  {{ include "postgres.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+Connection URL for the Lumiere backend:
+  postgresql://{{ .Values.auth.username }}:<password>@{{ include "postgres.fullname" . }}:{{ .Values.service.port }}/{{ .Values.auth.database }}?schema=public
+
+Check status:
+  kubectl -n {{ .Release.Namespace }} rollout status statefulset/{{ include "postgres.fullname" . }}
