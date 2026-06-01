@@ -56,8 +56,8 @@ export async function submitReview(
   return http.post(`/reviews/${productId}`, payload);
 }
 
-export async function deleteReview(productId: string): Promise<{ success: boolean }> {
-  return http.delete(`/reviews/${productId}`);
+export async function deleteReview(productId: string, userId?: string): Promise<{ success: boolean }> {
+  return http.delete(`/reviews/${productId}`, { body: userId ? { userId } : undefined });
 }
 
 export interface AdminStats {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import { isRecordNotFoundError } from '../lib/prismaErrors';
 import { products } from '../data/products';
 
 export async function getAdminStats(_req: Request, res: Response) {
@@ -50,12 +51,20 @@ export async function updateUserRole(req: Request, res: Response) {
     return;
   }
 
-  const user = await prisma.user.update({
-    where: { id: req.params['id'] as string },
-    data: { role },
-    select: { id: true, email: true, name: true, role: true },
-  });
-  res.json({ success: true, data: user });
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.params['id'] as string },
+      data: { role },
+      select: { id: true, email: true, name: true, role: true },
+    });
+    res.json({ success: true, data: user });
+  } catch (error) {
+    if (!isRecordNotFoundError(error)) {
+      throw error;
+    }
+
+    res.status(404).json({ success: false, error: 'User not found' });
+  }
 }
 
 export async function listOrders(_req: Request, res: Response) {
@@ -74,9 +83,17 @@ export async function updateOrderStatus(req: Request, res: Response) {
     return;
   }
 
-  const order = await prisma.order.update({
-    where: { id: req.params['id'] as string },
-    data: { status: status as 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' },
-  });
-  res.json({ success: true, data: order });
+  try {
+    const order = await prisma.order.update({
+      where: { id: req.params['id'] as string },
+      data: { status: status as 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' },
+    });
+    res.json({ success: true, data: order });
+  } catch (error) {
+    if (!isRecordNotFoundError(error)) {
+      throw error;
+    }
+
+    res.status(404).json({ success: false, error: 'Order not found' });
+  }
 }

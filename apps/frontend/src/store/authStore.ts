@@ -82,7 +82,8 @@ export const useAuthStore = create<AuthStore>()(
 
       updateProfile: async (data) => {
         const res = await updateProfileApi(data);
-        if (res.success && res.data) set({ user: res.data.user });
+        if (!res.success || !res.data) throw new Error(res.message ?? 'Failed to update profile');
+        set({ user: res.data.user });
       },
 
       changePassword: async (currentPassword, newPassword) => {

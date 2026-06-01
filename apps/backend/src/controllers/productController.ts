@@ -2,6 +2,28 @@ import { Request, Response } from 'express';
 import { products, categories } from '../data/products';
 import { ApiResponse, PaginatedResponse, Product } from '../types';
 
+function parsePositiveQueryInteger(value: string | undefined, fallback: number): number {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return fallback;
+  }
+
+  return parsed;
+}
+
+function parsePrice(value: string | undefined): number | null {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
 export function listProducts(req: Request, res: Response) {
   const {
     category,
@@ -25,16 +47,18 @@ export function listProducts(req: Request, res: Response) {
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.includes(q))
+        p.tags.some((t) => t.toLowerCase().includes(q))
     );
   }
 
-  if (minPrice) {
-    filtered = filtered.filter((p) => p.price >= Number(minPrice));
+  const parsedMinPrice = parsePrice(minPrice);
+  if (parsedMinPrice !== null) {
+    filtered = filtered.filter((p) => p.price >= parsedMinPrice);
   }
 
-  if (maxPrice) {
-    filtered = filtered.filter((p) => p.price <= Number(maxPrice));
+  const parsedMaxPrice = parsePrice(maxPrice);
+  if (parsedMaxPrice !== null) {
+    filtered = filtered.filter((p) => p.price <= parsedMaxPrice);
   }
 
   switch (sort) {
@@ -51,8 +75,8 @@ export function listProducts(req: Request, res: Response) {
       break;
   }
 
-  const pageNum = Math.max(1, Number(page));
-  const limitNum = Math.min(50, Math.max(1, Number(limit)));
+  const pageNum = parsePositiveQueryInteger(page, 1);
+  const limitNum = Math.min(50, parsePositiveQueryInteger(limit, 12));
   const start = (pageNum - 1) * limitNum;
   const paginated = filtered.slice(start, start + limitNum);
 

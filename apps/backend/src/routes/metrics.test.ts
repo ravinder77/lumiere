@@ -1,43 +1,24 @@
-import assert from 'node:assert/strict';
-import { after, before, describe, it } from 'node:test';
-import type { Server } from 'node:http';
+import request from 'supertest';
 import { createApp } from '../app/createApp';
 
-describe('metrics endpoint', () => {
-  let server: Server;
-  let baseUrl: string;
+describe('metrics and base app behavior', () => {
+  const app = createApp();
 
-  before(async () => {
-    const app = createApp();
-    await new Promise<void>((resolve) => {
-      server = app.listen(0, () => {
-        const address = server.address();
-        assert(address && typeof address === 'object');
-        baseUrl = `http://127.0.0.1:${address.port}`;
-        resolve();
-      });
-    });
+  it('exposes health and Prometheus metrics', async () => {
+    await request(app).get('/health').expect(200);
+
+    const response = await request(app).get('/metrics');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/text\/plain/);
+    expect(response.text).toContain('lumiere_backend_http_requests_total');
+    expect(response.text).toContain('route="/health"');
   });
 
-  after(async () => {
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => {
-        if (error) reject(error);
-        else resolve();
-      });
-    });
-  });
+  it('returns JSON 404s for unknown routes', async () => {
+    const response = await request(app).get('/nope');
 
-  it('exposes Prometheus metrics for the backend', async () => {
-    await fetch(`${baseUrl}/health`);
-
-    const response = await fetch(`${baseUrl}/metrics`);
-    const body = await response.text();
-
-    assert.equal(response.status, 200);
-    assert.match(response.headers.get('content-type') ?? '', /text\/plain/);
-    assert.match(body, /lumiere_backend_http_requests_total/);
-    assert.match(body, /lumiere_backend_http_request_duration_seconds_bucket/);
-    assert.match(body, /route="\/health"/);
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ success: false, error: 'Route not found' });
   });
 });

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import prisma from '../lib/prisma';
+import { isRecordNotFoundError } from '../lib/prismaErrors';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../lib/jwt';
 import { AuthRequest } from '../middleware/auth';
 import {
@@ -144,11 +145,21 @@ export async function updateProfile(req: AuthRequest, res: Response) {
     }
   }
 
-  const updated = await prisma.user.update({
-    where: { id: req.user!.userId },
-    data: { ...(name && { name }), ...(email && { email }) },
-    select: { id: true, email: true, name: true, role: true, createdAt: true },
-  });
+  let updated;
+  try {
+    updated = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { ...(name && { name }), ...(email && { email }) },
+      select: { id: true, email: true, name: true, role: true, createdAt: true },
+    });
+  } catch (error) {
+    if (!isRecordNotFoundError(error)) {
+      throw error;
+    }
+
+    res.status(404).json({ success: false, error: 'User not found' });
+    return;
+  }
 
   res.json({ success: true, message: 'Profile updated', data: { user: updated } });
 }

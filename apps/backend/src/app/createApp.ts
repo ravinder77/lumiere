@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import prisma from '../lib/prisma';
+import logger from '../lib/logger';
 import productsRouter from '../routes/products';
 import cartRouter from '../routes/cart';
 import checkoutRouter, { stripeWebhookHandler, stripeWebhookMiddleware } from '../routes/checkout';
@@ -14,13 +14,14 @@ import wishlistRouter from '../routes/wishlist';
 import reviewsRouter from '../routes/reviews';
 import adminRouter from '../routes/admin';
 import { metricsHandler, metricsMiddleware } from '../middleware/metrics';
+import { requestLogger } from '../middleware/requestLogger';
 
 export function createApp() {
   const app = express();
 
   app.use(helmet({ crossOriginEmbedderPolicy: false }));
   app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3000'], credentials: true }));
-  app.use(morgan('dev'));
+  app.use(requestLogger);
   app.use(metricsMiddleware);
   app.post('/api/checkout/webhook', stripeWebhookMiddleware, stripeWebhookHandler);
   app.use(express.json({ limit: '2mb' }));
@@ -69,7 +70,7 @@ export function createApp() {
       await prisma.$queryRaw`SELECT 1`;
       res.status(200).json({ status: 'ready' });
     } catch (err) {
-      console.log(err)
+      logger.error({ err }, 'Readiness check failed');
       res.status(500).json({ status: 'not_ready' });
     }
   });
@@ -80,10 +81,17 @@ export function createApp() {
     res.status(404).json({ success: false, error: 'Route not found' });
   });
 
-  app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    console.error('[ERROR]', err.message);
-    if (process.env.NODE_ENV === 'development') console.error(err.stack);
-    res.status(500).json({ success: false, error: err.message || 'Internal server error' });
+  app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    logger.error(
+      {
+        err,
+        method: req.method,
+        path: req.originalUrl,
+      },
+      'Unhandled request error'
+    );
+    const errorMessage = process.env.NODE_ENV === 'development' ? err.message : 'Internal server error';
+    res.status(500).json({ success: false, error: errorMessage });
   });
 
   return app;

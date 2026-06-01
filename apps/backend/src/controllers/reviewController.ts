@@ -10,6 +10,10 @@ const reviewSchema = z.object({
   body: z.string().min(10).max(2000).trim(),
 });
 
+const updateReviewSchema = reviewSchema.partial().refine((value) => Object.keys(value).length > 0, {
+  message: 'At least one review field is required',
+});
+
 export async function listProductReviews(req: Request, res: Response) {
   const productId = req.params['productId'] as string;
 
@@ -82,7 +86,7 @@ export async function createProductReview(req: AuthRequest, res: Response) {
 
 export async function updateProductReview(req: AuthRequest, res: Response) {
   const productId = req.params['productId'] as string;
-  const parsed = reviewSchema.partial().safeParse(req.body);
+  const parsed = updateReviewSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(422).json({
       success: false,

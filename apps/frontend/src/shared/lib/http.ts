@@ -161,7 +161,7 @@ export const http = {
   patch<T>(path: string, body?: RequestOptions['body'], options?: Omit<RequestOptions, 'method' | 'body'>) {
     return request<T>(path, { ...options, method: 'PATCH', body });
   },
-  delete<T>(path: string, options?: Omit<RequestOptions, 'method' | 'body'>) {
+  delete<T>(path: string, options?: Omit<RequestOptions, 'method'>) {
     return request<T>(path, { ...options, method: 'DELETE' });
   },
 };

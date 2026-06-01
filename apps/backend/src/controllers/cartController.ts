@@ -46,6 +46,11 @@ export function createNewCart(_req: Request, res: Response) {
 
 export function addCartItem(req: Request, res: Response) {
   const { productId, quantity = 1 } = req.body as { productId: string; quantity?: number };
+  if (typeof productId !== 'string' || productId.trim().length === 0) {
+    res.status(400).json({ success: false, error: 'productId is required' });
+    return;
+  }
+
   const cart = getCart(param(req, 'cartId'));
   if (!cart) {
     res.status(404).json({ success: false, error: 'Cart not found' });

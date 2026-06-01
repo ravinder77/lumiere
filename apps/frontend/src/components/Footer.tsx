@@ -49,7 +49,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xs tracking-widest uppercase text-stone-300 mb-4">Newsletter</h4>
             <p className="text-sm text-stone-500 mb-4">Thoughtful dispatches on new arrivals and ideas.</p>
-            <form onSubmit={handleNewsletter} className="flex">
+            <form onSubmit={handleNewsletter} noValidate className="flex">
               <input
                 type="email"
                 value={email}

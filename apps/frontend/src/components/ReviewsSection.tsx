@@ -42,7 +42,10 @@ export default function ReviewsSection({ productId }: ReviewsSectionProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => deleteReview(productId),
+    mutationFn: (reviewUserId?: string) => deleteReview(
+      productId,
+      user?.role === 'ADMIN' && reviewUserId !== user.id ? reviewUserId : undefined
+    ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['reviews', productId] });
       setTitle(''); setBody(''); setRating(5);
@@ -198,7 +201,7 @@ export default function ReviewsSection({ productId }: ReviewsSectionProps) {
                 {/* Delete button for own review or admin */}
                 {(review.userId === user?.id || user?.role === 'ADMIN') && (
                   <button
-                    onClick={() => deleteMutation.mutate()}
+                    onClick={() => deleteMutation.mutate(review.userId)}
                     disabled={deleteMutation.isPending}
                     className="text-stone-300 hover:text-red-500 transition-colors flex-shrink-0"
                     aria-label="Delete review"

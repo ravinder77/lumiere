@@ -25,6 +25,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
     } catch {
       set({ initialized: true });
     }
+    set({ initialized: true });
   },
 
   toggle: async (productId: string): Promise<boolean> => {
