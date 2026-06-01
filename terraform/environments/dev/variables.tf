@@ -76,6 +76,21 @@ variable "node_max_size" {
   default     = 4
 }
 
+variable "cluster_addons" {
+  description = "EKS add-ons to install after the cluster is created."
+  type = map(object({
+    addon_version               = optional(string)
+    resolve_conflicts_on_create = optional(string, "OVERWRITE")
+    resolve_conflicts_on_update = optional(string, "OVERWRITE")
+  }))
+  default = {
+    coredns            = {}
+    kube-proxy         = {}
+    vpc-cni            = {}
+    aws-ebs-csi-driver = {}
+  }
+}
+
 variable "database_name" {
   description = "Initial PostgreSQL database name."
   type        = string

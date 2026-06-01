@@ -181,8 +181,9 @@ variable "cluster_addons" {
     resolve_conflicts_on_update = optional(string, "OVERWRITE")
   }))
   default = {
-    coredns    = {}
-    kube-proxy = {}
-    vpc-cni    = {}
+    coredns            = {}
+    kube-proxy         = {}
+    vpc-cni            = {}
+    aws-ebs-csi-driver = {}
   }
 }

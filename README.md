@@ -272,3 +272,18 @@ Use for order confirmation, password reset tokens, and email verification.
 - **DB**: Supabase / Neon (free PostgreSQL tiers available)
 # lumiere
 # lumiere
+
+
+# Install prometheus stack
+❯ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --version  86.1.0  \
+  -f monitoring/kube-prometheus-stack/values.yaml
+
+# Install Loki 
+helm upgrade --install loki grafana/loki \
+  --namespace monitoring \
+  --create-namespace \
+  --version 7.0.0
+  -f monitoring/loki/values.yaml

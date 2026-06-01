@@ -110,6 +110,13 @@ resource "aws_iam_role_policy_attachment" "node_ecr_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "node_ebs_csi_policy" {
+  count = contains(keys(var.cluster_addons), "aws-ebs-csi-driver") ? 1 : 0
+
+  role       = aws_iam_role.node.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = local.node_group_name
@@ -154,27 +161,25 @@ resource "aws_eks_node_group" "main" {
     aws_iam_role_policy_attachment.node_ecr_policy
   ]
 
-  lifecycle {
-    ignore_changes = [scaling_config[0].desired_size]
-  }
 }
 
-resource "aws_eks_addon" "coredns" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "coredns"
-}
+resource "aws_eks_addon" "this" {
+  for_each = var.cluster_addons
 
-resource "aws_eks_addon" "kube_proxy" {
   cluster_name = aws_eks_cluster.main.name
-  addon_name   = "kube-proxy"
-}
+  addon_name   = each.key
 
-resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "vpc-cni"
-}
+  addon_version               = try(each.value.addon_version, null)
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "OVERWRITE")
+  resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
 
-resource "aws_eks_addon" "ebs_csi" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "aws-ebs-csi-driver"
+  tags = merge(local.common_tags, {
+    Name = "${var.name_prefix}-${each.key}"
+  })
+
+  depends_on = [
+    aws_eks_cluster.main,
+    aws_iam_role_policy_attachment.node_ebs_csi_policy,
+    aws_eks_node_group.main
+  ]
 }
