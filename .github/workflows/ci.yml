@@ -26,7 +26,6 @@ env:
 
 # ─── Required secrets ────────────────────────────────────────────────────────
 # AWS_ROLE_ARN          – OIDC role for ECR push + image pull
-# SEMGREP_APP_TOKEN     – Semgrep Cloud (optional)
 # SONAR_TOKEN           – SonarQube token (optional)
 # SONAR_HOST_URL        – SonarQube host URL (optional)
 # ─────────────────────────────────────────────────────────────────────────────

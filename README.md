@@ -279,11 +279,11 @@ Use for order confirmation, password reset tokens, and email verification.
   --namespace monitoring \
   --create-namespace \
   --version  86.1.0  \
-  -f monitoring/kube-prometheus-stack/values.yaml
+  --values monitoring/kube-prometheus-stack/values.yaml
 
-# Install Loki 
+# Install Loki  
 helm upgrade --install loki grafana/loki \
   --namespace monitoring \
   --create-namespace \
   --version 7.0.0
-  -f monitoring/loki/values.yaml
+  --values monitoring/loki/values.yaml
