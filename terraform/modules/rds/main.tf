@@ -1,3 +1,4 @@
+
 locals {
   common_tags = merge(var.tags, {
     Environment = var.environment
@@ -15,6 +16,13 @@ resource "random_password" "master" {
   length           = 32
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "aws_kms_key" "rds" {
+  description = "RDS encryption key"
+  deletion_window_in_days = 7
+  enable_key_rotation = true
+
 }
 
 resource "aws_db_subnet_group" "this" {
@@ -63,7 +71,7 @@ resource "aws_db_instance" "this" {
   max_allocated_storage = var.max_allocated_storage > 0 ? var.max_allocated_storage : null
   storage_type          = var.storage_type
   storage_encrypted     = var.storage_encrypted
-  kms_key_id            = var.kms_key_id
+  kms_key_id            = aws_kms_key.rds.id
 
   db_subnet_group_name   = aws_db_subnet_group.this.name
   vpc_security_group_ids = var.security_group_ids

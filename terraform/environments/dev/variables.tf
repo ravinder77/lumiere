@@ -80,8 +80,11 @@ variable "cluster_addons" {
   description = "EKS add-ons to install after the cluster is created."
   type = map(object({
     addon_version               = optional(string)
+    configuration_values        = optional(string)
+    preserve                    = optional(bool)
     resolve_conflicts_on_create = optional(string, "OVERWRITE")
     resolve_conflicts_on_update = optional(string, "OVERWRITE")
+    service_account_role_arn    = optional(string)
   }))
   default = {
     coredns            = {}
@@ -89,6 +92,48 @@ variable "cluster_addons" {
     vpc-cni            = {}
     aws-ebs-csi-driver = {}
   }
+}
+
+variable "create_eks_kms_key" {
+  description = "Whether the EKS module creates a customer-managed KMS key for Kubernetes secret encryption."
+  type        = bool
+  default     = true
+}
+
+variable "eks_kms_key_arn" {
+  description = "Existing KMS key ARN for EKS Kubernetes secret encryption. Null lets the EKS module create one."
+  type        = string
+  default     = null
+}
+
+variable "create_eks_oidc_provider" {
+  description = "Whether the EKS module creates the IAM OIDC provider used by IRSA."
+  type        = bool
+  default     = true
+}
+
+variable "eks_oidc_provider_arn" {
+  description = "Existing IAM OIDC provider ARN for this EKS cluster. Null lets the EKS module create one."
+  type        = string
+  default     = null
+}
+
+variable "eks_access_entries" {
+  description = "EKS access entries keyed by a stable name."
+  type = map(object({
+    principal_arn     = string
+    kubernetes_groups = optional(list(string), [])
+    type              = optional(string, "STANDARD")
+    user_name         = optional(string)
+    policy_associations = optional(map(object({
+      policy_arn = string
+      access_scope = optional(object({
+        type       = optional(string, "cluster")
+        namespaces = optional(list(string))
+      }), { type = "cluster" })
+    })), {})
+  }))
+  default = {}
 }
 
 variable "database_name" {

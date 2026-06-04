@@ -39,9 +39,29 @@ output "cluster_role_arn" {
   value       = aws_iam_role.cluster.arn
 }
 
+output "kms_key_arn" {
+  description = "KMS key ARN used for Kubernetes secret encryption, when configured."
+  value       = local.cluster_encryption_key_arn
+}
+
+output "kms_key_id" {
+  description = "KMS key ID created by this module, when create_kms_key is true."
+  value       = try(aws_kms_key.eks[0].key_id, null)
+}
+
 output "oidc_issuer_url" {
   description = "OIDC issuer URL for the EKS cluster."
-  value       = aws_eks_cluster.main.identity[0].oidc[0].issuer
+  value       = local.oidc_issuer_url
+}
+
+output "oidc_provider_arn" {
+  description = "IAM OIDC provider ARN for the EKS cluster, when configured."
+  value       = local.oidc_provider_arn
+}
+
+output "oidc_provider_url" {
+  description = "IAM OIDC provider URL hostpath for trust policies."
+  value       = local.oidc_hostpath
 }
 
 output "node_group_name" {
@@ -72,6 +92,11 @@ output "node_role_arn" {
 output "addon_names" {
   description = "Installed EKS add-on names."
   value       = keys(aws_eks_addon.this)
+}
+
+output "access_entry_arns" {
+  description = "EKS access entry ARNs keyed by access entry name."
+  value       = { for key, entry in aws_eks_access_entry.this : key => entry.access_entry_arn }
 }
 
 output "kubeconfig_command" {

@@ -81,6 +81,30 @@ variable "cluster_log_retention_days" {
   default     = 30
 }
 
+variable "create_kms_key" {
+  description = "Whether to create a customer-managed KMS key for Kubernetes secret encryption."
+  type        = bool
+  default     = true
+}
+
+variable "kms_key_arn" {
+  description = "Existing KMS key ARN for Kubernetes secret encryption. When null and create_kms_key is true, this module creates one."
+  type        = string
+  default     = null
+}
+
+variable "kms_key_deletion_window_in_days" {
+  description = "Waiting period in days before deleting the EKS secrets KMS key."
+  type        = number
+  default     = 7
+}
+
+variable "kms_key_enable_rotation" {
+  description = "Whether automatic key rotation is enabled for the EKS secrets KMS key."
+  type        = bool
+  default     = true
+}
+
 variable "authentication_mode" {
   description = "EKS access authentication mode."
   type        = string
@@ -96,6 +120,18 @@ variable "bootstrap_cluster_creator_admin_permissions" {
   description = "Whether the principal creating the cluster gets admin access."
   type        = bool
   default     = true
+}
+
+variable "create_oidc_provider" {
+  description = "Whether to create an IAM OIDC provider for the EKS cluster."
+  type        = bool
+  default     = true
+}
+
+variable "oidc_provider_arn" {
+  description = "Existing IAM OIDC provider ARN for this EKS cluster. When null and create_oidc_provider is true, this module creates one."
+  type        = string
+  default     = null
 }
 
 variable "node_group_name" {
@@ -177,8 +213,11 @@ variable "cluster_addons" {
   description = "EKS add-ons to install after the cluster is created."
   type = map(object({
     addon_version               = optional(string)
+    configuration_values        = optional(string)
+    preserve                    = optional(bool)
     resolve_conflicts_on_create = optional(string, "OVERWRITE")
     resolve_conflicts_on_update = optional(string, "OVERWRITE")
+    service_account_role_arn    = optional(string)
   }))
   default = {
     coredns            = {}
@@ -186,4 +225,22 @@ variable "cluster_addons" {
     vpc-cni            = {}
     aws-ebs-csi-driver = {}
   }
+}
+
+variable "access_entries" {
+  description = "EKS access entries keyed by a stable name. Use policy_associations to attach AWS managed EKS access policies."
+  type = map(object({
+    principal_arn     = string
+    kubernetes_groups = optional(list(string), [])
+    type              = optional(string, "STANDARD")
+    user_name         = optional(string)
+    policy_associations = optional(map(object({
+      policy_arn = string
+      access_scope = optional(object({
+        type       = optional(string, "cluster")
+        namespaces = optional(list(string))
+      }), { type = "cluster" })
+    })), {})
+  }))
+  default = {}
 }

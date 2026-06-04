@@ -71,6 +71,34 @@ grafana:
       access: proxy
       url: http://loki-gateway.monitoring.svc.cluster.local
       editable: true
+      jsonData:
+        derivedFields:
+          - name: TraceID
+            matcherRegex: '"trace_id":"([a-f0-9]+)"'
+            datasourceUid: tempo
+            url: '$${__value.raw}'
+            urlDisplayLabel: View trace
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      access: proxy
+      url: http://tempo.monitoring.svc.cluster.local:3200
+      editable: true
+      jsonData:
+        nodeGraph:
+          enabled: true
+        search:
+          hide: false
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: -5m
+          spanEndTimeShift: 5m
+          filterByTraceID: true
+          filterBySpanID: false
+          customQuery: true
+          query: '{service_name="$${__span.tags.service.name}"} | trace_id="$${__trace.traceId}"'
+        serviceMap:
+          datasourceUid: prometheus
 
 
 prometheusOperator:
@@ -94,6 +122,7 @@ prometheus:
     retentionSize: 8GB
     scrapeInterval: 30s
     evaluationInterval: 30s
+    enableOTLPReceiver: true
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
     ruleSelectorNilUsesHelmValues: false

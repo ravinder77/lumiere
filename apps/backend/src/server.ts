@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './telemetry';
 import { createApp } from './app/createApp';
 import logger from './lib/logger';
 
@@ -15,7 +16,6 @@ const server = app.listen(PORT, () => {
         api: `http://localhost:${PORT}/api`,
         health: `http://localhost:${PORT}/health`,
         ready: `http://localhost:${PORT}/ready`,
-        metrics: `http://localhost:${PORT}/metrics`,
       },
     },
     'Server started'

@@ -23,9 +23,6 @@ function logUrl(req: IncomingMessage): string | undefined {
 export const requestLogger = pinoHttp({
   logger,
   genReqId: requestId,
-  autoLogging: {
-    ignore: (req) => req.url === '/metrics',
-  },
   customLogLevel(_req: IncomingMessage, res: ServerResponse, error?: Error) {
     if (error || res.statusCode >= 500) return 'error';
     if (res.statusCode >= 400) return 'warn';

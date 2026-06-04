@@ -46,11 +46,17 @@ module "eks" {
   cluster_subnet_ids = module.vpc.private_subnet_ids
   node_subnet_ids    = module.vpc.private_subnet_ids
 
+  create_kms_key       = var.create_eks_kms_key
+  kms_key_arn          = var.eks_kms_key_arn
+  create_oidc_provider = var.create_eks_oidc_provider
+  oidc_provider_arn    = var.eks_oidc_provider_arn
+
   node_instance_types = var.node_instance_types
   node_desired_size   = var.node_desired_size
   node_min_size       = var.node_min_size
   node_max_size       = var.node_max_size
   cluster_addons      = var.cluster_addons
+  access_entries      = var.eks_access_entries
 
   tags = local.common_tags
 }
@@ -110,7 +116,8 @@ module "iam" {
   eks_cluster_arns = [module.eks.cluster_arn]
 
   enable_external_dns_irsa          = var.enable_external_dns_irsa
-  create_external_dns_oidc_provider = var.enable_external_dns_irsa
+  create_external_dns_oidc_provider = var.enable_external_dns_irsa && !var.create_eks_oidc_provider && var.eks_oidc_provider_arn == null
   external_dns_oidc_issuer_url      = module.eks.oidc_issuer_url
+  external_dns_oidc_provider_arn    = module.eks.oidc_provider_arn
   external_dns_route53_zone_arns    = module.dns.zone_arn == null ? ["*"] : [module.dns.zone_arn]
 }

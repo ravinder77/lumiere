@@ -275,7 +275,7 @@ Use for order confirmation, password reset tokens, and email verification.
 
 
 # Install prometheus stack
-❯ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
   --create-namespace \
   --version  86.1.0  \
@@ -285,5 +285,19 @@ Use for order confirmation, password reset tokens, and email verification.
 helm upgrade --install loki grafana/loki \
   --namespace monitoring \
   --create-namespace \
-  --version 7.0.0
+  --version 7.0.0 \
   --values monitoring/loki/values.yaml
+
+# Install Tempo
+helm upgrade --install tempo grafana/tempo \
+  --namespace monitoring \
+  --create-namespace \
+  --values monitoring/tempo/values.yaml
+
+# Install OpenTelemetry Collector
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update open-telemetry
+helm upgrade --install opentelemetry-collector open-telemetry/opentelemetry-collector \
+  --namespace monitoring \
+  --create-namespace \
+  --values monitoring/opentelemetry-collector/values.yaml

@@ -13,7 +13,6 @@ import authRouter from '../routes/auth';
 import wishlistRouter from '../routes/wishlist';
 import reviewsRouter from '../routes/reviews';
 import adminRouter from '../routes/admin';
-import { metricsHandler, metricsMiddleware } from '../middleware/metrics';
 import { requestLogger } from '../middleware/requestLogger';
 
 export function createApp() {
@@ -22,7 +21,6 @@ export function createApp() {
   app.use(helmet({ crossOriginEmbedderPolicy: false }));
   app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3000'], credentials: true }));
   app.use(requestLogger);
-  app.use(metricsMiddleware);
   app.post('/api/checkout/webhook', stripeWebhookMiddleware, stripeWebhookHandler);
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true }));
@@ -74,8 +72,6 @@ export function createApp() {
       res.status(500).json({ status: 'not_ready' });
     }
   });
-
-  app.get('/metrics', metricsHandler);
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, error: 'Route not found' });

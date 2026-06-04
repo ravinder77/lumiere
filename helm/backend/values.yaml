@@ -44,7 +44,7 @@ service:
   targetPort: 4000
 
 serviceMonitor:
-  enabled: true
+  enabled: false
   labels:
     release: prometheus
   path: /metrics
@@ -53,6 +53,14 @@ serviceMonitor:
 envFrom:
   - secretRef:
       name: lumiere-app-secret
+
+env:
+  - name: OTEL_SERVICE_NAME
+    value: lumiere-backend
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+    value: http://opentelemetry-collector.monitoring.svc.cluster.local:4318
+  - name: OTEL_METRIC_EXPORT_INTERVAL_MS
+    value: "30000"
 
 migrations:
   enabled: true

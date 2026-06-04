@@ -1,8 +1,0 @@
----
-
-- hosts: role_bastion
-  become: yes
-
-  roles:
-    - bastion
-    - geerlingguy.docker
